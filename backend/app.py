@@ -12,7 +12,7 @@ import google.generativeai as genai
 
 # Cloudinary configuration
 
-CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/dzfoiqap7/image/upload"
+CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/dzfoiqap7/raw/upload"
 CLOUDINARY_UPLOAD_PRESET = "nlp-ielts"  # Replace with actual preset name
 
 # Initialize app
