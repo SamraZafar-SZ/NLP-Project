@@ -26,7 +26,7 @@ const Home = () => {
   // Send keylog/snapshot to LLM API
   const sendToLLM = async (payload, endpoint = "llm-log") => {
     try {
-      await fetch(`https://nlp-project-14iy.onrender.com/${endpoint}`, {
+      await fetch(`https://ielts-essay-analysis-production.up.railway.app/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -43,7 +43,7 @@ const Home = () => {
   useEffect(() => {
     const fetchPrompt = async () => {
       try {
-        const response = await fetch("https://nlp-project-14iy.onrender.com/prompt");
+        const response = await fetch("https://ielts-essay-analysis-production.up.railway.app/prompt");
         const data = await response.json();
         setPrompt(data.prompt);
         setTimerStarted(true);
@@ -161,7 +161,7 @@ const Home = () => {
     setSubmitted(true);
 
     try {
-      const response = await fetch("https://nlp-project-14iy.onrender.com/report", {
+      const response = await fetch("https://ielts-essay-analysis-production.up.railway.app/report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
