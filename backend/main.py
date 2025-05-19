@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from pathlib import Path
 import base64
 import time
+import os
 import json
 import requests
 import random
@@ -141,3 +142,7 @@ async def get_prompt():
     ]
     random.seed(time.time())
     return {"prompt": random.choice(topics)}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
