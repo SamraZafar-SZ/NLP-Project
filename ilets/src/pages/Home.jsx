@@ -159,6 +159,7 @@ const Home = () => {
     }
 
     setSubmitted(true);
+    alert("Submitting your essay... Please wait.");
 
     try {
       const response = await fetch("https://ielts-essay-analysis-production.up.railway.app/report", {
