@@ -150,46 +150,60 @@ const Home = () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [handleKeyDown]);
+const handleSubmit = async () => {
+  if (submitted) return; // prevent multiple submissions
+  if (!text.trim()) {
+    alert("Please write something before submitting.");
+    return;
+  }
 
-  const handleSubmit = async () => {
-    if (submitted) return; // prevent multiple submissions
-    if (!text.trim()) {
-      alert("Please write something before submitting.");
-      return;
+  setSubmitted(true);
+  alert("Submitting your essay... Please wait.");
+
+  try {
+    // 🔹 1. Main essay report API call
+    const response = await fetch("https://ielts-essay-analysis-production.up.railway.app/report", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        topic: prompt,
+        essay: text,
+        snapshot: timedText,
+        score,
+        keylogs: loggedText,
+        user_id,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const message = errorData.detail || errorData.message || "Unknown server error.";
+      throw new Error(message);
     }
 
-    setSubmitted(true);
-    alert("Submitting your essay... Please wait.");
+    const result = await response.json();
+    console.log("Submitted:", result);
 
-    try {
-      const response = await fetch("https://ielts-essay-analysis-production.up.railway.app/report", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          topic: prompt,
-          essay: text,
-          snapshot: timedText,
-          score,
-          keylogs: loggedText,
-          user_id,
-        }),
-      });
+    // 🔹 2. Notify backend to send email (email logic is hardcoded on server)
+    fetch("https://botstreet2025.onrender.com/api/auth/essaySubmit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        topic: prompt,
+        user_id,
+      }),
+    }).catch((err) => console.warn("Email trigger failed:", err));
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const message = errorData.detail || errorData.message || "Unknown server error.";
-        throw new Error(message);
-      }
-      const result = await response.json();
-      console.log("Submitted:", result);
-      alert("Essay submitted!");
-      navigate("/feedback", { state: { report: result.report,  user_id } }); // redirect with report
-    } catch (error) {
-      console.error("Submit error:", error);
-      alert("Submission failed.");
-      setSubmitted(false);
-    }
-  };
+    alert("Essay submitted!");
+    navigate("/feedback", { state: { report: result.report, user_id } });
+
+  } catch (error) {
+    console.error("Submit error:", error);
+    alert("Submission failed.");
+    setSubmitted(false);
+  }
+};
+
   const wordCount = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
 
 
@@ -233,7 +247,7 @@ const Home = () => {
 
       <div style={{ marginTop: "1%", textAlign: "left" }}>
         <button onClick={handleSubmit} disabled={submitted}>
-          Submit
+          Submit!
         </button>
       </div>
     </>
