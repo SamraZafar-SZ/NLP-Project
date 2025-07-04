@@ -160,6 +160,7 @@ const handleSubmit = async () => {
     return;
   }
 
+  setTimerStarted(false);
   setLoading(true);  // show spinner
 
   try {
