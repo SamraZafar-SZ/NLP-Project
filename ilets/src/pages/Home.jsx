@@ -151,7 +151,7 @@ const Home = () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [handleKeyDown]);
-const [loading, setLoading] = useState(false);  // new state
+
 
 const handleSubmit = async () => {
   if (submitted || loading) return;  // prevent multiple submissions
