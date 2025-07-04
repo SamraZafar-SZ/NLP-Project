@@ -151,18 +151,18 @@ const Home = () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [handleKeyDown]);
-const handleSubmit = async () => {
-  if (submitted || loading) return;
-    if (!text.trim()) {
-      alert("Please write something before submitting.");
-      return;
-    }
+const [loading, setLoading] = useState(false);  // new state
 
-    setLoading(true);
-    setSubmitted(true);
+const handleSubmit = async () => {
+  if (submitted || loading) return;  // prevent multiple submissions
+  if (!text.trim()) {
+    alert("Please write something before submitting.");
+    return;
+  }
+
+  setLoading(true);  // show spinner
 
   try {
-    // 1. Main essay report API call
     const response = await fetch("https://ielts-essay-analysis-production.up.railway.app/report", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -183,29 +183,23 @@ const handleSubmit = async () => {
     }
 
     const result = await response.json();
-    console.log("Submitted:", result);
-
-    // 2. Notify backend to send email (email logic is hardcoded on server)
-    fetch("https://botstreet2025.onrender.com/api/auth/essaySubmit", {
+    await fetch("https://botstreet2025.onrender.com/api/auth/essaySubmit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        topic: prompt,
-        user_id,
-      }),
-    }).catch((err) => console.warn("Email trigger failed:", err));
+      body: JSON.stringify({ topic: prompt, user_id }),
+    }).catch(err => console.warn("Email trigger failed:", err));
 
-    alert("Essay submitted!");
+    setSubmitted(true);
     navigate("/feedback", { state: { report: result.report, user_id } });
 
   } catch (error) {
     console.error("Submit error:", error);
     alert("Submission failed.");
-    setSubmitted(false);
-  }finally {
-      setLoading(false);
-    }
+  } finally {
+    setLoading(false);  // always hide spinner
+  }
 };
+
 
   const wordCount = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
 
