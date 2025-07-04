@@ -12,6 +12,7 @@ const Home = () => {
   const [timer, setTimer] = useState(20 * 60); // 15 minutes
   const [timerStarted, setTimerStarted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const user_id = Date.now().toString(36).slice(-4); // 4-char ID
   const textRef = useRef(text);
@@ -151,17 +152,17 @@ const Home = () => {
     };
   }, [handleKeyDown]);
 const handleSubmit = async () => {
-  if (submitted) return; // prevent multiple submissions
-  if (!text.trim()) {
-    alert("Please write something before submitting.");
-    return;
-  }
+  if (submitted || loading) return;
+    if (!text.trim()) {
+      alert("Please write something before submitting.");
+      return;
+    }
 
-  setSubmitted(true);
-  alert("Submitting your essay... Please wait.");
+    setLoading(true);
+    setSubmitted(true);
 
   try {
-    // 🔹 1. Main essay report API call
+    // 1. Main essay report API call
     const response = await fetch("https://ielts-essay-analysis-production.up.railway.app/report", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -184,7 +185,7 @@ const handleSubmit = async () => {
     const result = await response.json();
     console.log("Submitted:", result);
 
-    // 🔹 2. Notify backend to send email (email logic is hardcoded on server)
+    // 2. Notify backend to send email (email logic is hardcoded on server)
     fetch("https://botstreet2025.onrender.com/api/auth/essaySubmit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -201,7 +202,9 @@ const handleSubmit = async () => {
     console.error("Submit error:", error);
     alert("Submission failed.");
     setSubmitted(false);
-  }
+  }finally {
+      setLoading(false);
+    }
 };
 
   const wordCount = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
