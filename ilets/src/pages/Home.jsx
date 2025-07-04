@@ -243,10 +243,22 @@ const handleSubmit = async () => {
       </div>
 
       <div style={{ marginTop: "1%", textAlign: "left" }}>
-        <button onClick={handleSubmit} disabled={submitted}>
-          Submit!
-        </button>
-      </div>
+  <button
+    onClick={handleSubmit}
+    disabled={submitted || loading}
+    style={{
+      padding: "10px 20px",
+      backgroundColor: submitted || loading ? "#ccc" : "#007bff",
+      color: "white",
+      border: "none",
+      borderRadius: "4px",
+      cursor: submitted || loading ? "not-allowed" : "pointer",
+    }}
+  >
+    {loading ? "Submitting..." : "Submit!"}
+  </button>
+</div>
+
     </>
   );
 };
